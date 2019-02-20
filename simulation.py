@@ -50,8 +50,7 @@ class Simulation:
 
     def simulationFinished(self):
         return True
-        # return self._population.allDead or self._population.allLivingHealthy or \
-        #  self._population.noMoreInfections
+        # return self._population.allDead or self._population.allLivingHealthy
 
     def printDailyReport(self, values):
         print("Day %d:" % self.currentSimulationDay)

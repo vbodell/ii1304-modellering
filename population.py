@@ -20,8 +20,9 @@ class Population:
         indices = []
         for xOffs in range(-1,2):
             for yOffs in range(-1,2):
-                nX = x + xOffs
-                nY = y + yOffs
+                # Wraparound so that every individual has 8 neighbors
+                nX = (x + xOffs) % self.N if (x + xOffs) != -1 else self.N - 1
+                nY = (y + yOffs) % self.N if (y + yOffs) != -1 else self.N - 1
                 if self.validPosition(nX, nY) and not (nX == x and nY == y):
                     neighbors.append(self._persons[nX][nY])
                     indices.append((nX,nY))
@@ -30,6 +31,8 @@ class Population:
         return neighbors
 
     def validPosition(self, x, y):
+        # if not (x >= 0 and x < self.N) and (y >= 0 and y < self.N):
+        #     print("Invalid Position?!")
         return (x >= 0 and x < self.N) and (y >= 0 and y < self.N)
 
     @property
@@ -49,19 +52,15 @@ class Population:
         return all([p.isDead for row in self._persons for p in row])
 
     @property
-    def allLivingHealthy(self):
-        return all([p.isHealthy for row in self._persons for p in row if not p.isDead])
-
-    @property
-    def noMoreInfections(self):
-        # Note that this returns true if all are infected as well
-        return all([p.isDead for row in self._persons for p in row if p.isHealthy])
+    def allHealthy(self):
+        return all([p.isHealthy for row in self._persons for p in row])
 
     def simulateDay(self, day):
         self.currentSimulationDay = day
 
         todaysDeathCount = todaysInfectionCount = todaysGotHealthyCount = 0
 
+        #TODO Clear this up as well...:
         # Infected people whose period of sickness is up get healthy
 
 
