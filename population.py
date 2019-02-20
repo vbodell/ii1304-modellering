@@ -1,19 +1,25 @@
 from person import Person
 
 class Population:
-    def __init__(self, simulation, N, infected):
+    def __init__(self, N, probInfect, minDaysSick, maxDaysSick,
+     probDeath, infected):
         self.N = N
-        self._simulation = simulation
+
+        self.probInfect = probInfect
+        self.minDaysSick = minDaysSick
+        self.maxDaysSick = maxDaysSick
+        self.probDeath = probDeath
 
         self._persons = [[Person() for _ in range(N)] for _ in range(N)]
         for x in range(N):
             for y in range(N):
-                self._persons[x][y].setNeighbors(self.getNeighbors(x,y, True))
+                self._persons[x][y].setNeighbors(self.getNeighbors(x,y))
 
         self.currentSimulationDay = 0
 
         for (x,y) in infected:
-            self._persons[x][y].infect(self.currentSimulationDay, 1)
+            self._persons[x][y].infect(self.currentSimulationDay,
+                                       (self.minDaysSick, self.maxDaysSick))
 
     def getNeighbors(self, x, y, verbose=False):
         neighbors = []
@@ -52,24 +58,30 @@ class Population:
         return all([p.isDead for row in self._persons for p in row])
 
     @property
-    def allHealthy(self):
-        return all([p.isHealthy for row in self._persons for p in row])
+    def allLivingHealthy(self):
+        return all([p.isHealthy for row in self._persons for p in row if not p.isDead])
 
     def simulateDay(self, day):
         self.currentSimulationDay = day
 
-        todaysDeathCount = todaysInfectionCount = todaysGotHealthyCount = 0
+        deathCount = infectedCount = gotHealthyCount = 0
 
-        #TODO Clear this up as well...:
         # Infected people whose period of sickness is up get healthy
-
+        for p in self.currentInfectedIndividuals:
+            gotHealthyCount += p.getHealthy(day)
 
         # Infect neighbor with probabiltiy probInfect, number of days neighbor
         #  becomes sick is a random integer in the interval [minDays, maxDays]
+        # Note that the list of infected has now updated accounting for healthy
+        for p in self.currentInfectedIndividuals:
+            infectedCount += p.infectNeighbors(self.probInfect, day,
+                                               (self.minDaysSick, self.maxDaysSick))
 
         # Die with probability probDeath
+        for p in self.currentInfectedIndividuals:
+            deathCount += p.die(self.probDeath)
 
         return {'infected': len(self.currentInfectedIndividuals),
-                'died': 0,
-                'gotHealthy': 0,
-                'gotInfected': 0}
+                'died': deathCount,
+                'gotHealthy': gotHealthyCount,
+                'gotInfected': infectedCount}

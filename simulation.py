@@ -17,9 +17,9 @@ class Simulation:
         self.printInitString()
 
         self.currentSimulationDay = 0
-        self._population = Population(self, N, self.initialSick)
+        self._population = Population(N, probInfect, minDaysSick,
+         maxDaysSick, probDeath, self.initialSick)
         print(self._population)
-
 
     def printInitString(self):
         initSimString = "\n### Initializing simulation with the" +\
@@ -49,15 +49,15 @@ class Simulation:
         self.printCumulativeReport()
 
     def simulationFinished(self):
-        return True
-        # return self._population.allDead or self._population.allLivingHealthy
+        # return True
+        return self._population.allDead or self._population.allLivingHealthy
 
     def printDailyReport(self, values):
         print("Day %d:" % self.currentSimulationDay)
-        print("# got infected: %d" % values['gotInfected'])
-        print("# deaths:       %d" % values['died'])
-        print("# got healthy:  %d" % values['gotHealthy'])
-        print("# infected:     %d" % values['infected'])
+        print(" # got infected: %d" % values['gotInfected'])
+        print(" # deaths:       %d" % values['died'])
+        print(" # got healthy:  %d" % values['gotHealthy'])
+        print(" # infected:     %d" % values['infected'])
         print(self._population)
 
     def printCumulativeReport(self):
@@ -65,6 +65,7 @@ class Simulation:
             print("Simulation hasn't terminated yet!")
             return
 
-        print("Simulation ran for a total of %d days" % self.currentSimulationDay) # TODO: +1?
-        print("Total # of infected: %d" % self.totalSickCount)
-        print("Total # of deaths:   %d" % self.totalDeathCount)
+        print("===Simulation ran a total of %d days===" % self.currentSimulationDay) # TODO: +1?
+        print("   Total # of infected: %d" % self.totalSickCount)
+        print("   Total # of deaths:   %d" % self.totalDeathCount)
+        print("   Proportion infected: %.3f" % (self.totalSickCount/(self.N*self.N)))

@@ -4,40 +4,40 @@ import random
 class Person():
     State = Enum('State', 'HEALTHY INFECTED DEAD')
 
-    kMaxNeighbors = 8
-
-    def __init__(self, firstDayOfInfection=-1, state=State.HEALTHY, isImmune=False):
+    def __init__(self): #, firstDayOfInfection=None, state=State.HEALTHY, isImmune=False):
         self.neighbors = None
-        self.firstDayOfInfection = firstDayOfInfection
-        self.state = state
-        self.isImmune = isImmune
+        self.firstDayOfInfection = None
+        self.state = Person.State.HEALTHY
+        self.isImmune = False
         self.infectionDays = None
-        self.hasTriedInfection = False
+        self.hasTriedInfecting = False
 
     def setNeighbors(self, neighbors):
         self.neighbors = neighbors
 
-    def infectNeighbors(self, prob, currentDay, infectionDays):
-        if self.wasInfectedToday or self.isDead or self.isHealthy or\
-         self.hasTriedInfection or not self.neighbors:
-            return
+    def infectNeighbors(self, prob, currentDay, daysInterval):
+        # Returns the number of neighbors that were infected
+        if self.wasInfectedToday(currentDay) or self.isDead or\
+         self.isHealthy or self.hasTriedInfecting or not self.neighbors:
+            return 0
 
-        # TODO:
-        # infectNeighbors = random.choices([True, False], weights=[prob, 1-prob])[0]
-        # if infectNeighbors:
-            # [n.infect(currentDay, infectionDays) for n in self.neighbors]
+        infectCount = 0
+        if random.choices([True, False], weights=[prob, 1-prob])[0]:
+            for n in self.neighbors:
+                infectCount += n.infect(currentDay, daysInterval)
 
-        self.hasTriedInfection = True
-        return infectNeighbors
+        self.hasTriedInfecting = True
+        return infectCount
 
     def die(self, prob):
-        if self.isDead or self.wasInfectedToday: # TODO: Infected today?
+        if self.isDead: # Note that an individual infected today may still die
             return
 
-        if random.choices([True, False], weights=[prob, 1-prob])[0]:
+        died = random.choices([True, False], weights=[prob, 1-prob])[0]
+        if died:
             self.state = Person.State.DEAD
+        return died
 
-    @property
     def wasInfectedToday(self, day):
         return day == self.firstDayOfInfection
 
@@ -53,12 +53,14 @@ class Person():
     def isDead(self):
         return self.state == Person.State.DEAD
 
-    def infect(self, infectionDay, infectionDays):
+    def infect(self, infectionDay, daysInterval):
         if self.isImmune or self.isInfected or self.isDead:
-            return
+            return False
 
-        self.firstDayOfInfection = infectionDay
         self.state = Person.State.INFECTED
+        self.firstDayOfInfection = infectionDay
+        self.infectionDays = self.randomInfectionDays(daysInterval)
+        return True
 
     def getHealthy(self, currentDay):
         # Returns True iff self was infected and got healthy
@@ -70,6 +72,10 @@ class Person():
             self.isImmune = True
 
         return self.isHealthy
+
+
+    def randomInfectionDays(self, interval):
+        return random.randint(interval[0], interval[1])
 
     def __str__(self):
         s = ""
