@@ -3,8 +3,16 @@ import random
 
 class Person():
     State = Enum('State', 'HEALTHY INFECTED DEAD')
+    VERBOSE = False
 
-    def __init__(self): #, firstDayOfInfection=None, state=State.HEALTHY, isImmune=False):
+    @staticmethod
+    def setSeed(SEED):
+        if Person.VERBOSE:
+            print("Seed was set to %d" % SEED)
+        random.seed(SEED)
+
+    def __init__(self, x, y):
+        self.name = "[%s, %s]" % (x,y) # A unique identifier for each person
         self.neighbors = None
         self.firstDayOfInfection = None
         self.state = Person.State.HEALTHY
@@ -60,6 +68,10 @@ class Person():
         self.state = Person.State.INFECTED
         self.firstDayOfInfection = infectionDay
         self.infectionDays = self.randomInfectionDays(daysInterval)
+
+        if Person.VERBOSE:
+            print("%s was infected on day %d and will be sick for %d days" %\
+             (self.name, self.firstDayOfInfection, self.infectionDays))
         return True
 
     def getHealthy(self, currentDay):
@@ -80,22 +92,11 @@ class Person():
     def __str__(self):
         s = ""
         if self.state is Person.State.HEALTHY:
-            s += "H"
+            s += "h"
         elif self.state == Person.State.INFECTED:
-            s += "I"
+            s += "/"
         else:
-            s += "D"
+            s += "-"
 
-        s += "x" if self.isImmune else "."
+        s += "X" if self.isImmune else "."
         return s
-
-if __name__ == "__main__":
-    p = Person()
-    print(p)
-
-# class PersonTester():
-#     def __init__(self, person):
-#         self.person = person
-#
-#     def test1(self):
-#         pass

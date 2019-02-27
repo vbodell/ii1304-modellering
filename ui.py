@@ -10,7 +10,9 @@ class UI:
     initialSick = 7 # 10%
     initialSickNdx = [(i,i) for i in range(initialSick)]
 
-    def __init__(self):
+    def __init__(self, verbose, seed):
+        self.verbose = verbose
+        self.seed = seed
         self.simulation = None
 
     def initSimulation(self):
@@ -65,7 +67,7 @@ class UI:
                 initialSickNdx = UI.initialSickNdx
 
         self.simulation = Simulation(N, probInfect, minDaysSick, maxDaysSick,
-         probDeath, initialSickNdx)
+         probDeath, initialSickNdx, self.verbose, self.seed)
 
 
     def _readInitialSick(self, initialSick, upperBound):

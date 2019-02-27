@@ -2,40 +2,19 @@ from population import Population
 
 class Simulation:
     def __init__(self, N, probInfect, minDaysSick, maxDaysSick, probDeath,
-     initialSick):
+     initialSick, VERBOSE, SEED):
 
         self.N = N
-        self.probInfect = probInfect
-        self.minDaysSick = minDaysSick
-        self.maxDaysSick = maxDaysSick
-        self.probDeath = probDeath
-        self.initialSick = initialSick # List of positions for the initially infected
-
         self.totalSickCount = len(initialSick)
         self.totalDeathCount = 0
 
-        self.printInitString()
+        self.printInitString(VERBOSE, SEED, N, probInfect, minDaysSick,
+         maxDaysSick, probDeath, initialSick)
 
         self.currentSimulationDay = 0
         self._population = Population(N, probInfect, minDaysSick,
-         maxDaysSick, probDeath, self.initialSick)
+         maxDaysSick, probDeath, initialSick, VERBOSE, SEED)
         print(self._population)
-
-    def printInitString(self):
-        initSimString = "\n### Initializing simulation with the" +\
-         " following parameters ###\n"
-        initSimString += "   N=%d\n" % self.N
-        initSimString += "   probInfect=%.2f\n" % self.probInfect
-        initSimString += "   minDaysSick=%d\n" % self.minDaysSick
-        initSimString += "   maxDaysSick=%d\n" % self.maxDaysSick
-        initSimString += "   probDeath=%.2f\n" % self.probDeath
-        initSimString += "   initialSick=%d\n" % len(self.initialSick)
-
-        for ndx in range(len(self.initialSick)):
-            initSimString += "      Sick position #%d: [%d,%d]\n" % (ndx+1,
-             self.initialSick[ndx][0], self.initialSick[ndx][1])
-
-        print(initSimString)
 
     def start(self):
         while not self.simulationFinished():
@@ -49,7 +28,6 @@ class Simulation:
         self.printCumulativeReport()
 
     def simulationFinished(self):
-        # return True
         return self._population.allDead or self._population.allLivingHealthy
 
     def printDailyReport(self, values):
@@ -69,3 +47,22 @@ class Simulation:
         print("   Total # of infected: %d" % self.totalSickCount)
         print("   Total # of deaths:   %d" % self.totalDeathCount)
         print("   Proportion infected: %.3f" % (self.totalSickCount/(self.N*self.N)))
+
+    def printInitString(self, VERBOSE, SEED, N, probInfect,
+     minDaysSick, maxDaysSick, probDeath, initialSick):
+        initSimString = "\n### Initializing simulation with the" +\
+         " following parameters ###\n"
+        initSimString += " Verbose=%s\n" % VERBOSE
+        initSimString += " SEED=%s\n" % SEED
+        initSimString += "   N=%d\n" % N
+        initSimString += "   probInfect=%.2f\n" % probInfect
+        initSimString += "   minDaysSick=%d\n" % minDaysSick
+        initSimString += "   maxDaysSick=%d\n" % maxDaysSick
+        initSimString += "   probDeath=%.2f\n" % probDeath
+        initSimString += "   initialSick=%d\n" % len(initialSick)
+
+        for ndx in range(len(initialSick)):
+            initSimString += "      Sick position #%d: [%d,%d]\n" % (ndx+1,
+             initialSick[ndx][0], initialSick[ndx][1])
+
+        print(initSimString)

@@ -2,7 +2,7 @@ from person import Person
 
 class Population:
     def __init__(self, N, probInfect, minDaysSick, maxDaysSick,
-     probDeath, infected):
+     probDeath, infected, VERBOSE, SEED):
         self.N = N
 
         self.probInfect = probInfect
@@ -10,7 +10,12 @@ class Population:
         self.maxDaysSick = maxDaysSick
         self.probDeath = probDeath
 
-        self._persons = [[Person() for _ in range(N)] for _ in range(N)]
+        if VERBOSE:
+            Person.VERBOSE = True
+        if SEED:
+            Person.setSeed(SEED)
+
+        self._persons = [[Person(x,y) for y in range(N)] for x in range(N)]
         for x in range(N):
             for y in range(N):
                 self._persons[x][y].setNeighbors(self.getNeighbors(x,y))
@@ -37,8 +42,6 @@ class Population:
         return neighbors
 
     def validPosition(self, x, y):
-        # if not (x >= 0 and x < self.N) and (y >= 0 and y < self.N):
-        #     print("Invalid Position?!")
         return (x >= 0 and x < self.N) and (y >= 0 and y < self.N)
 
     @property
@@ -75,7 +78,7 @@ class Population:
         # Note that the list of infected has now updated accounting for healthy
         for p in self.currentInfectedIndividuals:
             infectedCount += p.infectNeighbors(self.probInfect, day,
-                                               (self.minDaysSick, self.maxDaysSick))
+                              (self.minDaysSick, self.maxDaysSick))
 
         # Die with probability probDeath
         for p in self.currentInfectedIndividuals:
