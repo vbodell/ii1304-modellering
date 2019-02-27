@@ -5,6 +5,7 @@ class Simulation:
      initialSick, VERBOSE, SEED):
 
         self.N = N
+        self.probInfect = probInfect
         self.totalSickCount = len(initialSick)
         self.totalDeathCount = 0
 
@@ -47,6 +48,7 @@ class Simulation:
         print("   Total # of infected: %d" % self.totalSickCount)
         print("   Total # of deaths:   %d" % self.totalDeathCount)
         print("   Proportion infected: %.3f" % (self.totalSickCount/(self.N*self.N)))
+        print("CSV:%.2f,%.3f" % (self.probInfect, self.totalSickCount/(self.N*self.N)))
 
     def printInitString(self, VERBOSE, SEED, N, probInfect,
      minDaysSick, maxDaysSick, probDeath, initialSick):
