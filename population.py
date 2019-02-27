@@ -18,7 +18,7 @@ class Population:
         self._persons = [[Person(x,y) for y in range(N)] for x in range(N)]
         for x in range(N):
             for y in range(N):
-                self._persons[x][y].setNeighbors(self.getNeighbors(x,y))
+                self._persons[x][y].setNeighbors(self.getNeighbors(x,y, VERBOSE))
 
         self.currentSimulationDay = 0
 
@@ -27,6 +27,7 @@ class Population:
                                        (self.minDaysSick, self.maxDaysSick))
 
     def getNeighbors(self, x, y, verbose=False):
+        # Get the immediate neighbors for a person with position (x,y)
         neighbors = []
         indices = []
         for xOffs in range(-1,2):

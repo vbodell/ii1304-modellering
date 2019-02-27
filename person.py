@@ -1,5 +1,5 @@
 from enum import Enum
-import random
+from numpy import random
 
 class Person():
     State = Enum('State', 'HEALTHY INFECTED DEAD')
@@ -30,7 +30,7 @@ class Person():
             return 0
 
         infectCount = 0
-        if random.choices([True, False], weights=[prob, 1-prob])[0]:
+        if random.choice([True, False], 1, p=[prob, 1-prob])[0]:
             for n in self.neighbors:
                 infectCount += n.infect(currentDay, daysInterval)
 
@@ -41,7 +41,7 @@ class Person():
         if self.isDead: # Note that an individual infected today may still die
             return
 
-        died = random.choices([True, False], weights=[prob, 1-prob])[0]
+        died = random.choice([True, False], 1, p=[prob, 1-prob])[0]
         if died:
             self.state = Person.State.DEAD
         return died
@@ -85,8 +85,8 @@ class Person():
 
         return self.isHealthy
 
-
-    def randomInfectionDays(self, interval):
+    @staticmethod
+    def randomInfectionDays(interval):
         return random.randint(interval[0], interval[1])
 
     def __str__(self):
@@ -100,3 +100,47 @@ class Person():
 
         s += "X" if self.isImmune else "."
         return s
+
+if __name__ == "__main__":
+    assert Person.randomInfectionDays((2,2)) == 2
+    assert Person.randomInfectionDays((2,4)) > 1
+    assert Person.randomInfectionDays((2,4)) < 5
+
+    p = Person(0,1)
+    Person.VERBOSE = True
+    assert p.isHealthy
+    assert not p.isImmune
+    assert not p.isDead
+    assert not p.isInfected
+    assert str(p) == "h."
+    assert not p.getHealthy(0)
+
+    print("Infect p:")
+    p.infect(1, (2,2))
+    assert not p.isHealthy
+    assert not p.isDead
+    assert p.isInfected
+    assert str(p) == "/."
+
+    assert p.firstDayOfInfection == 1
+    assert p.infectionDays == 2
+    assert not p.getHealthy(1)
+    assert not p.getHealthy(2)
+    assert p.getHealthy(3)
+
+    # p is now healthy
+    assert p.isHealthy
+    assert p.isImmune
+    assert str(p) == "hX"
+
+    p.infect(1, (2,2))
+    assert p.isHealthy
+
+    p = Person(0,0)
+    p.infect(1, (2,2))
+    assert not p.die(0)
+    assert p.die(1.0)
+    assert p.isDead
+    assert not p.isHealthy
+    assert not p.isInfected
+    print("Passed all tests")

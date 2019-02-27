@@ -44,11 +44,11 @@ class Simulation:
             print("Simulation hasn't terminated yet!")
             return
 
-        print("===Simulation ran a total of %d days===" % self.currentSimulationDay) # TODO: +1?
+        print("===Simulation ran a total of %d days===" % self.currentSimulationDay)
         print("   Total # of infected: %d" % self.totalSickCount)
         print("   Total # of deaths:   %d" % self.totalDeathCount)
         print("   Proportion infected: %.3f" % (self.totalSickCount/(self.N*self.N)))
-        print("CSV:%.2f,%.3f" % (self.probInfect, self.totalSickCount/(self.N*self.N)))
+        print("CSV:%.3f,%.3f" % (self.probInfect, self.totalSickCount/(self.N*self.N)))
 
     def printInitString(self, VERBOSE, SEED, N, probInfect,
      minDaysSick, maxDaysSick, probDeath, initialSick):
